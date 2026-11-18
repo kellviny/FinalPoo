@@ -43,10 +43,11 @@ export class PainelEstudante {
       )
       .sort((a, b) => a.getDataLimite().getTime() - b.getDataLimite().getTime());
   }
-
+  
   public obterAtividadesEmAtraso(): AtividadePratica[] {
-    // TODO (Colaborador): Consolidar atividades em atraso de todos os workspaces.
-    return this.workspaces.flatMap((ws) => ws.listarItensEmAtraso());
+    return this.workspaces
+      .flatMap((ws) => ws.listarItensEmAtraso())
+      .sort((a, b) => a.getDataLimite().getTime() - b.getDataLimite().getTime());
   }
 
   public obterMuralLembretesFixados(): Lembrete[] {
