@@ -49,9 +49,8 @@ export class PainelEstudante {
       .flatMap((ws) => ws.listarItensEmAtraso())
       .sort((a, b) => a.getDataLimite().getTime() - b.getDataLimite().getTime());
   }
-
+  
   public obterMuralLembretesFixados(): Lembrete[] {
-    // TODO (Colaborador): Consolidar lembretes fixados de todas as disciplinas.
     return this.workspaces.flatMap((ws) => ws.listarLembretesFixados());
   }
 
