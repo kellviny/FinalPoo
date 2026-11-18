@@ -1,149 +1,279 @@
 @startuml AcademiaFlow_Dominio
-skinparam classAttributeIconSize 0
-skinparam monochrome false
-skinparam packageStyle rectangle
 
-title Diagrama de Classes de Domínio — AcademiaFlow (POO com TypeScript)
+' =====================================================================
+'  AcademiaFlow - Diagrama de Classes de Dominio (src/domain)
+'
+'  Organizacao do arquivo:
+'    1. Estilo
+'    2. Tipos auxiliares      (src/domain/types.ts)
+'    3. Itens academicos      (ItemAcademico, AtividadePratica, TrabalhoEmGrupo, Lembrete)
+'    4. Agregados             (Workspace, PainelEstudante)
+'    5. Relacoes e posicionamento
+'    6. Conceitos de POO e legenda
+'
+'  Cores:  amarelo = classe base | azul = itens | verde = agregados | lilas = tipos
+'
+'  PENDENTE (estao no diagrama, mas ainda NAO existem no codigo):
+'    - AtividadePratica.adicionarItemChecklist()
+'    - AtividadePratica.alternarItemChecklist()
+'    - TrabalhoEmGrupo.adicionarEtapa()
+'  Implementar no .ts ou remover daqui antes da entrega.
+' =====================================================================
+
+
+' ===== 1. ESTILO =====
+set separator none
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam dpi 150
+skinparam nodesep 95
+skinparam ranksep 45
+skinparam defaultFontName Arial
+skinparam packageStyle rectangle
+skinparam class {
+  BorderColor #555555
+  ArrowColor #444444
+}
+skinparam rectangle {
+  BorderColor #9E9E9E
+  BackgroundColor #FFFFFF
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #B8A800
+}
+skinparam legend {
+  BackgroundColor #FFFFFF
+  BorderColor #9E9E9E
+}
+hide empty members
+
+title AcademiaFlow - Diagrama de Classes de Domínio\n(POO com TypeScript)
 
 package "Camada de Domínio (src/domain)" {
 
-  enum OrigemAtividade {
-    PROFESSOR
-    AUTOESTUDO
-  }
-
-  interface ItemChecklist {
-    + descricao: string
-    + feita: boolean
-  }
-
-  interface EtapaTrabalho {
-    + titulo: string
-    + responsavel: string
-    + entregue: boolean
-  }
-
-  abstract class ItemAcademico {
-    # id: string
-    # titulo: string
-    # descricao: string
-    # dataCriacao: Date
-    # workspaceId: string
-    --
-    + constructor(id: string, titulo: string, descricao: string, workspaceId: string, dataCriacao?: Date)
-    # validarTextoObrigatorio(valor: string, nomeCampo: string): void
-    + getId(): string
-    + getTitulo(): string
-    + getDescricao(): string
-    + getDataCriacao(): Date
-    + getWorkspaceId(): string
-    + obterResumoBasico(): string
-    + {abstract} obterCategoria(): string
-    + {abstract} estaPendente(): boolean
-    + {abstract} obterExibicaoFormatada(): string
-  }
-
-  class AtividadePratica extends ItemAcademico {
-    # dataLimite: Date
-    # concluida: boolean
-    # dataConclusao?: Date
-    - origem: OrigemAtividade
-    - checklist: ItemChecklist[]
-    - linkEntrega?: string
-    --
-    + constructor(...)
-    + obterCategoria(): string
-    + estaPendente(): boolean
-    + obterExibicaoFormatada(): string
-    + marcarComoConcluida(): void
-    + verificarSeAtrasada(): boolean
-    + calcularDiasRestantes(): number
-    + adicionarItemChecklist(descricao: string): void
-    + alternarItemChecklist(indice: number): void
-    + getDataLimite(): Date
-    + isConcluida(): boolean
-    + getDataConclusao(): Date | undefined
-    + getOrigem(): OrigemAtividade
-    + getChecklist(): ReadonlyArray<ItemChecklist>
-    + getLinkEntrega(): string | undefined
-  }
-
-  class TrabalhoEmGrupo extends AtividadePratica {
-    - colegasDeEquipe: string[]
-    - papelDoAluno: string
-    - etapas: EtapaTrabalho[]
-    --
-    + constructor(...)
-    + obterCategoria(): string
-    + estaPendente(): boolean
-    + obterExibicaoFormatada(): string
-    + adicionarEtapa(titulo: string, responsavel: string): void
-    + marcarEtapaComoEntregue(indice: number): void
-    + calcularProgressoPercentual(): number
-    + getColegasDeEquipe(): ReadonlyArray<string>
-    + getPapelDoAluno(): string
-    + getEtapas(): ReadonlyArray<EtapaTrabalho>
-  }
-
-  class Lembrete extends ItemAcademico {
-    - dataAviso?: Date
-    - fixado: boolean
-    - etiqueta: string
-    - arquivado: boolean
-    --
-    + constructor(...)
-    + obterCategoria(): string
-    + estaPendente(): boolean
-    + obterExibicaoFormatada(): string
-    + alternarFixacao(): void
-    + arquivar(): void
-    + isFixado(): boolean
-    + getEtiqueta(): string
-    + getDataAviso(): Date | undefined
-  }
-
-  class Workspace {
-    - codigo: string
-    - nome: string
-    - professor: string
-    - salaOuLink?: string
-    - horario?: string
-    - itens: ItemAcademico[]
-    --
-    + constructor(codigo: string, nome: string, professor: string, salaOuLink?: string, horario?: string)
-    + adicionarItem(item: ItemAcademico): void
-    + buscarItemPorId(id: string): ItemAcademico | undefined
-    + removerItem(id: string): boolean
-    + listarItens(): ReadonlyArray<ItemAcademico>
-    + listarItensPendentes(): ItemAcademico[]
-    + listarItensConcluidos(): ItemAcademico[]
-    + listarItensEmAtraso(): AtividadePratica[]
-    + listarLembretesFixados(): Lembrete[]
-    + buscarPorTexto(termo: string): ItemAcademico[]
-    + ordenarAtividadesPorPrazo(): AtividadePratica[]
-    + ordenarPorDataCadastro(): ItemAcademico[]
-    + filtrarAtividadesPorOrigem(origem: OrigemAtividade): AtividadePratica[]
-    + obterTotalAtividades(): number
-    + calcularTaxaConclusao(): number
-  }
-
-  class PainelEstudante {
-    - workspaces: Workspace[]
-    --
-    + adicionarWorkspace(workspace: Workspace): void
-    + buscarWorkspacePorCodigo(codigo: string): Workspace | undefined
-    + listarWorkspaces(): ReadonlyArray<Workspace>
-    + obterProximosPrazosDaSemana(): AtividadePratica[]
-    + obterAtividadesEmAtraso(): AtividadePratica[]
-    + obterMuralLembretesFixados(): Lembrete[]
-    + buscarGlobalPorTexto(termo: string): ItemAcademico[]
-  }
-
-  Workspace "1" *-- "0..*" ItemAcademico : compõe / gerencia >
-  PainelEstudante "1" o-- "0..*" Workspace : gerencia >
-  AtividadePratica ..> OrigemAtividade
-  AtividadePratica *-- ItemChecklist
-  TrabalhoEmGrupo *-- EtapaTrabalho
+' ===== 2. TIPOS AUXILIARES (types.ts) =====
+class OrigemAtividade <<type>> #F3E5F5 {
+  "PROFESSOR" | "AUTOESTUDO"
 }
+
+interface ItemChecklist #F3E5F5 {
+  + descricao: string
+  + feita: boolean
+}
+
+interface EtapaTrabalho #F3E5F5 {
+  + titulo: string
+  + responsavel: string
+  + entregue: boolean
+}
+
+
+' ===== 3. ITENS ACADEMICOS =====
+abstract class ItemAcademico <<classe base>> #FFF3CD {
+  # id: string {readOnly}
+  # titulo: string
+  # descricao: string
+  # dataCriacao: Date {readOnly}
+  # workspaceId: string {readOnly}
+  .. Construtor e validação ..
+  + ItemAcademico(id: string, titulo: string, descricao: string,\n    workspaceId: string, dataCriacao?: Date)
+  # validarTextoObrigatorio(valor: string, nomeCampo: string): void
+  .. Abstratos: cada subclasse implementa ..
+  + {abstract} obterCategoria(): string
+  + {abstract} estaPendente(): boolean
+  + {abstract} obterExibicaoFormatada(): string
+  .. Concretos ..
+  + obterResumoBasico(): string
+  + getId(): string
+  + getTitulo(): string
+  + getDescricao(): string
+  + getDataCriacao(): Date
+  + getWorkspaceId(): string
+}
+
+class AtividadePratica #E3F2FD {
+  # dataLimite: Date
+  # concluida: boolean
+  # dataConclusao?: Date
+  - origem: OrigemAtividade {readOnly}
+  - checklist: ItemChecklist[] {readOnly}
+  - linkEntrega?: string
+  .. Construtor ..
+  + AtividadePratica(id: string, titulo: string, descricao: string,\n    workspaceId: string, dataLimite: Date, origem?: OrigemAtividade,\n    checklist?: ItemChecklist[], linkEntrega?: string, concluida?: boolean,\n    dataConclusao?: Date, dataCriacao?: Date)
+  .. Implementa os abstratos ..
+  + obterCategoria(): string
+  + estaPendente(): boolean
+  + obterExibicaoFormatada(): string
+  .. Comportamento ..
+  + marcarComoConcluida(): void
+  + verificarSeAtrasada(): boolean
+  + calcularDiasRestantes(): number
+  ' PENDENTE no codigo
+  + adicionarItemChecklist(descricao: string): void
+  + alternarItemChecklist(indice: number): void
+  .. Getters ..
+  + getDataLimite(): Date
+  + isConcluida(): boolean
+  + getDataConclusao(): Date | undefined
+  + getOrigem(): OrigemAtividade
+  + getChecklist(): ReadonlyArray<ItemChecklist>
+  + getLinkEntrega(): string | undefined
+}
+
+class TrabalhoEmGrupo #E3F2FD {
+  - colegasDeEquipe: string[] {readOnly}
+  - papelDoAluno: string {readOnly}
+  - etapas: EtapaTrabalho[] {readOnly}
+  .. Construtor ..
+  + TrabalhoEmGrupo(id: string, titulo: string, descricao: string,\n    workspaceId: string, dataLimite: Date, colegasDeEquipe: string[],\n    papelDoAluno: string, etapas?: EtapaTrabalho[], origem?: OrigemAtividade,\n    checklist?: ItemChecklist[], linkEntrega?: string, concluida?: boolean,\n    dataConclusao?: Date, dataCriacao?: Date)
+  .. Sobrescreve ..
+  + obterCategoria(): string
+  + estaPendente(): boolean
+  + obterExibicaoFormatada(): string
+  .. Comportamento ..
+  ' PENDENTE no codigo
+  + adicionarEtapa(titulo: string, responsavel: string): void
+  + marcarEtapaComoEntregue(indice: number): void
+  + calcularProgressoPercentual(): number
+  .. Getters ..
+  + getColegasDeEquipe(): ReadonlyArray<string>
+  + getPapelDoAluno(): string
+  + getEtapas(): ReadonlyArray<EtapaTrabalho>
+}
+
+class Lembrete #E3F2FD {
+  - dataAviso?: Date
+  - fixado: boolean
+  - etiqueta: string
+  - arquivado: boolean
+  .. Construtor ..
+  + Lembrete(id: string, titulo: string, descricao: string,\n    workspaceId: string, etiqueta: string, fixado?: boolean,\n    dataAviso?: Date, arquivado?: boolean, dataCriacao?: Date)
+  .. Implementa os abstratos ..
+  + obterCategoria(): string
+  + estaPendente(): boolean
+  + obterExibicaoFormatada(): string
+  .. Comportamento ..
+  + alternarFixacao(): void
+  + arquivar(): void
+  .. Getters ..
+  + isFixado(): boolean
+  + getEtiqueta(): string
+  + getDataAviso(): Date | undefined
+}
+
+
+' ===== 4. AGREGADOS =====
+class Workspace #E8F5E9 {
+  - codigo: string {readOnly}
+  - nome: string
+  - professor: string
+  - salaOuLink?: string
+  - horario?: string
+  - itens: ItemAcademico[] {readOnly}
+  .. Construtor ..
+  + Workspace(codigo: string, nome: string, professor: string,\n    salaOuLink?: string, horario?: string)
+  .. Gerência dos itens ..
+  + adicionarItem(item: ItemAcademico): void
+  + buscarItemPorId(id: string): ItemAcademico | undefined
+  + removerItem(id: string): boolean
+  + listarItens(): ReadonlyArray<ItemAcademico>
+  .. Consultas ..
+  + listarItensPendentes(): ItemAcademico[]
+  + listarItensConcluidos(): ItemAcademico[]
+  + listarItensEmAtraso(): AtividadePratica[]
+  + listarLembretesFixados(): Lembrete[]
+  + buscarPorTexto(termo: string): ItemAcademico[]
+  + ordenarAtividadesPorPrazo(): AtividadePratica[]
+  + ordenarPorDataCadastro(): ItemAcademico[]
+  + filtrarAtividadesPorOrigem(\n    origem: OrigemAtividade): AtividadePratica[]
+  + obterTotalAtividades(): number
+  + calcularTaxaConclusao(): number
+  .. Getters ..
+  + getCodigo(): string
+  + getNome(): string
+  + getProfessor(): string
+  + getSalaOuLink(): string | undefined
+  + getHorario(): string | undefined
+}
+
+class PainelEstudante #E8F5E9 {
+  - workspaces: Workspace[] {readOnly}
+  .. Gerência dos workspaces ..
+  + adicionarWorkspace(workspace: Workspace): void
+  + buscarWorkspacePorCodigo(\n    codigo: string): Workspace | undefined
+  + listarWorkspaces(): ReadonlyArray<Workspace>
+  .. Visão consolidada ..
+  + obterProximosPrazosDaSemana(): AtividadePratica[]
+  + obterAtividadesEmAtraso(): AtividadePratica[]
+  + obterMuralLembretesFixados(): Lembrete[]
+  + buscarGlobalPorTexto(termo: string): ItemAcademico[]
+}
+
+}
+
+
+' ===== 5. RELACOES E POSICIONAMENTO =====
+' Leitura: Painel -> Workspace -> ItemAcademico -> subclasses -> tipos auxiliares.
+' Dependencias (tracejadas): so as do Workspace, uma de cada lado do ItemAcademico.
+' NAO desenhadas, de proposito, para nao cruzar linhas:
+'   - PainelEstudante -> AtividadePratica / Lembrete (derivada: o Painel delega ao Workspace)
+'   - Workspace -> OrigemAtividade (so aparece como parametro de filtrarAtividadesPorOrigem)
+
+' --- Agregados e composição
+PainelEstudante "1" o-right- "0..*" Workspace : agrega >
+Workspace "1" *-down- "0..*" ItemAcademico : compõe >
+
+' --- Herança (Lembrete à esquerda, AtividadePratica à direita)
+ItemAcademico <|-down- Lembrete
+ItemAcademico <|-down- AtividadePratica
+Lembrete -[hidden]right- AtividadePratica
+AtividadePratica <|-right- TrabalhoEmGrupo
+
+' --- Composição e associação com os tipos auxiliares
+AtividadePratica -down-> OrigemAtividade : origem
+AtividadePratica "1" *-down- "0..*" ItemChecklist : checklist >
+TrabalhoEmGrupo "1" *-down- "0..*" EtapaTrabalho : etapas >
+
+' --- Dependências (Workspace usa as duas classes como tipo de retorno)
+' Ficam uma de cada lado do ItemAcademico para não cruzar a herança.
+Workspace .[#888888].> Lembrete : retorna
+Workspace .[#888888].> AtividadePratica : retorna
+
+
+' ===== 6. CONCEITOS DE POO E LEGENDA =====
+note as ConceitosPOO
+  **Conceitos de POO aplicados**
+
+  **Abstração:** ItemAcademico define o que todo
+  item tem e declara 3 métodos abstratos.
+
+  **Herança:** AtividadePratica e Lembrete estendem
+  ItemAcademico. TrabalhoEmGrupo estende AtividadePratica
+  e reaproveita prazo e conclusão.
+
+  **Polimorfismo:** a tela chama obterExibicaoFormatada()
+  sem saber o tipo do item. Cada subclasse responde
+  do seu jeito.
+
+  **Encapsulamento:** atributos privados ou protegidos.
+  Quem consulta recebe cópia somente leitura.
+
+  **Composição:** Workspace compõe os itens (todo item
+  exige um workspaceId). **Agregação:** o Painel reúne
+  workspaces que existem por conta própria.
+end note
+
+legend bottom
+  |= Cor |= Papel |= Símbolo |= Significado |
+  | <back:#FFF3CD>      </back> | classe base abstrata | + # - | público, protegido, privado |
+  | <back:#E3F2FD>      </back> | itens acadêmicos | {readOnly} | atributo readonly |
+  | <back:#E8F5E9>      </back> | agregados | ◆ | composição |
+  | <back:#F3E5F5>      </back> | tipos auxiliares (types.ts) | ◇ | agregação |
+  | | | △ | herança (extends) |
+  | | | ┈> | dependência (usa como tipo de retorno) |
+endlegend
 
 @enduml
