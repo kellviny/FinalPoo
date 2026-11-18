@@ -55,7 +55,6 @@ export class PainelEstudante {
   }
 
   public buscarGlobalPorTexto(termo: string): ItemAcademico[] {
-    // TODO (Colaborador): Buscar em todos os workspaces por palavra-chave.
     return this.workspaces.flatMap((ws) => ws.buscarPorTexto(termo));
   }
 }
