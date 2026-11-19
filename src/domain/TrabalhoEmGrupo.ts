@@ -51,33 +51,45 @@ export class TrabalhoEmGrupo extends AtividadePratica {
   }
 
   public override estaPendente(): boolean {
-    // TODO (Colaborador): Retornar true enquanto o trabalho não estiver 100% finalizado
-    return !this.concluida;
+    //Retornar true enquanto o trabalho não estiver 100% finalizado
+    return !this.concluida && this.calcularProgressoPercentual() < 100;
   }
 
   public override obterExibicaoFormatada(): string {
-    // TODO (Colaborador): Incluir progresso percentual da equipe e papel do aluno
+    //Incluir progresso percentual da equipe e papel do aluno
     return `[${this.obterCategoria()}] ${this.titulo} — Papel: ${this.papelDoAluno} (${this.calcularProgressoPercentual()}%)`;
   }
 
   public marcarEtapaComoEntregue(indice: number): void {
-    // TODO (Colaborador): Validar índice, marcar etapa e verificar conclusão automática de 100%
+    //Validar índice, marcar etapa e verificar conclusão automática de 100%
     if (indice < 0 || indice >= this.etapas.length) {
       throw new Error("Índice de etapa inválido.");
     }
     this.etapas[indice].entregue = true;
+
+    if (this.calcularProgressoPercentual() === 100 && !this.concluida) {
+      this.marcarComoConcluida();
+    }
   }
 
   public calcularProgressoPercentual(): number {
-    // TODO (Colaborador): Calcular percentual de etapas entregues (ou 100% se concluida)
+    //Calcular percentual de etapas entregues (ou 100% se concluida)
     if (this.concluida) {
       return 100;
     }
+
     if (this.etapas.length === 0) {
       return 0;
     }
-    const entregues = this.etapas.filter((e) => e.entregue).length;
-    return Math.round((entregues / this.etapas.length) * 100);
+
+    let etapasEntregues = 0;
+    for (const etapa of this.etapas) {
+      if (etapa.entregue) {
+        etapasEntregues++;
+      }
+    }
+
+    return Math.round((etapasEntregues / this.etapas.length) * 100);
   }
 
   public getColegasDeEquipe(): ReadonlyArray<string> {
