@@ -29,23 +29,32 @@ export class PainelEstudante {
   }
 
   public obterProximosPrazosDaSemana(): AtividadePratica[] {
-    // TODO (Colaborador): Retornar lista ordenada de atividades pendentes de todos
-    // os workspaces com vencimento nos próximos 7 dias.
-    return [];
-  }
+    const limite = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
 
+    return this.workspaces
+      .flatMap((ws) => ws.listarItens())
+      // instanceof pega AtividadePratica e também TrabalhoEmGrupo, que herda dela
+      .filter((item): item is AtividadePratica => item instanceof AtividadePratica)
+      .filter(
+        (atividade) =>
+          atividade.estaPendente() &&
+          !atividade.verificarSeAtrasada() &&
+          atividade.getDataLimite().getTime() <= limite
+      )
+      .sort((a, b) => a.getDataLimite().getTime() - b.getDataLimite().getTime());
+  }
+  
   public obterAtividadesEmAtraso(): AtividadePratica[] {
-    // TODO (Colaborador): Consolidar atividades em atraso de todos os workspaces.
-    return this.workspaces.flatMap((ws) => ws.listarItensEmAtraso());
+    return this.workspaces
+      .flatMap((ws) => ws.listarItensEmAtraso())
+      .sort((a, b) => a.getDataLimite().getTime() - b.getDataLimite().getTime());
   }
-
+  
   public obterMuralLembretesFixados(): Lembrete[] {
-    // TODO (Colaborador): Consolidar lembretes fixados de todas as disciplinas.
     return this.workspaces.flatMap((ws) => ws.listarLembretesFixados());
   }
 
   public buscarGlobalPorTexto(termo: string): ItemAcademico[] {
-    // TODO (Colaborador): Buscar em todos os workspaces por palavra-chave.
     return this.workspaces.flatMap((ws) => ws.buscarPorTexto(termo));
   }
 }
