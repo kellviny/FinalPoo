@@ -51,8 +51,8 @@ export class TrabalhoEmGrupo extends AtividadePratica {
   }
 
   public override estaPendente(): boolean {
-    // TODO (Colaborador): Retornar true enquanto o trabalho não estiver 100% finalizado
-    return !this.concluida;
+    //Retornar true enquanto o trabalho não estiver 100% finalizado
+    return this.calcularProgressoPercentual() < 100;
   }
 
   public override obterExibicaoFormatada(): string {
