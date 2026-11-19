@@ -73,15 +73,23 @@ export class TrabalhoEmGrupo extends AtividadePratica {
   }
 
   public calcularProgressoPercentual(): number {
-    // TODO (Colaborador): Calcular percentual de etapas entregues (ou 100% se concluida)
+    //Calcular percentual de etapas entregues (ou 100% se concluida)
     if (this.concluida) {
       return 100;
     }
+
     if (this.etapas.length === 0) {
       return 0;
     }
-    const entregues = this.etapas.filter((e) => e.entregue).length;
-    return Math.round((entregues / this.etapas.length) * 100);
+
+    let etapasEntregues = 0;
+    for (const etapa of this.etapas) {
+      if (etapa.entregue) {
+        etapasEntregues++;
+      }
+    }
+
+    return Math.round((etapasEntregues / this.etapas.length) * 100);
   }
 
   public getColegasDeEquipe(): ReadonlyArray<string> {
