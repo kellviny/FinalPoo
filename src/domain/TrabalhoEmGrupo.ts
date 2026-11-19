@@ -52,20 +52,24 @@ export class TrabalhoEmGrupo extends AtividadePratica {
 
   public override estaPendente(): boolean {
     //Retornar true enquanto o trabalho não estiver 100% finalizado
-    return this.calcularProgressoPercentual() < 100;
+    return !this.concluida && this.calcularProgressoPercentual() < 100;
   }
 
   public override obterExibicaoFormatada(): string {
-    // TODO (Colaborador): Incluir progresso percentual da equipe e papel do aluno
+    //Incluir progresso percentual da equipe e papel do aluno
     return `[${this.obterCategoria()}] ${this.titulo} — Papel: ${this.papelDoAluno} (${this.calcularProgressoPercentual()}%)`;
   }
 
   public marcarEtapaComoEntregue(indice: number): void {
-    // TODO (Colaborador): Validar índice, marcar etapa e verificar conclusão automática de 100%
+    //Validar índice, marcar etapa e verificar conclusão automática de 100%
     if (indice < 0 || indice >= this.etapas.length) {
       throw new Error("Índice de etapa inválido.");
     }
     this.etapas[indice].entregue = true;
+
+    if (this.calcularProgressoPercentual() === 100 && !this.concluida) {
+      this.marcarComoConcluida();
+    }
   }
 
   public calcularProgressoPercentual(): number {
