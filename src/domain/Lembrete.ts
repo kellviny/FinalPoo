@@ -44,9 +44,13 @@ export class Lembrete extends ItemAcademico {
   }
 
   public obterExibicaoFormatada(): string {
-    // TODO (Colaborador): Formatar exibição amigável com etiqueta e status de fixado
-    const iconeFixado = this.fixado ? "[FIXADO] " : "";
-    return `${iconeFixado}[${this.obterCategoria()} • ${this.etiqueta}] ${this.titulo}`;
+    const prefixoFixado = this.fixado ? "[FIXADO] " : "";
+    const sufixoAviso = this.dataAviso
+      ? ` — Aviso: ${this.dataAviso.toLocaleDateString("pt-BR")}`
+      : "";
+    const sufixoArquivado = this.arquivado ? " (Arquivado)" : "";
+
+    return `${prefixoFixado}[${this.obterCategoria()} • ${this.etiqueta}] ${this.titulo}${sufixoAviso}${sufixoArquivado}`;
   }
 
   public alternarFixacao(): void {
