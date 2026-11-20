@@ -43,6 +43,10 @@ export class Lembrete extends ItemAcademico {
     return false;
   }
 
+  public contaComoAtividade(): boolean {
+    return false;
+  }
+
   public obterExibicaoFormatada(): string {
     const prefixoFixado = this.fixado ? "[FIXADO] " : "";
     const sufixoAviso = this.dataAviso

@@ -74,6 +74,11 @@ export abstract class ItemAcademico {
   public abstract estaPendente(): boolean;
 
   /**
+   * Indica se o item é uma atividade entregável contabilizada nas métricas da disciplina.
+   */
+  public abstract contaComoAtividade(): boolean;
+
+  /**
    * Retorna um texto resumido e amigável formatado para apresentação.
    */
   public abstract obterExibicaoFormatada(): string;

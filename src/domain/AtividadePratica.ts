@@ -44,6 +44,10 @@ export class AtividadePratica extends ItemAcademico {
     return !this.concluida;
   }
 
+  public contaComoAtividade(): boolean {
+    return true;
+  }
+
   public obterExibicaoFormatada(): string {
     // TODO (Colaborador): Aprimorar formatação amigável com prazo e status
     const status = this.concluida ? "Concluída" : "Pendente";
