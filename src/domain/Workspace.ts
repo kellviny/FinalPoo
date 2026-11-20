@@ -133,8 +133,7 @@ export class Workspace {
   }
 
   public obterTotalAtividades(): number {
-    // TODO (Colaborador): Contabilizar total de atividades da disciplina
-    return this.itens.length;
+    return this.itens.filter((item) => item.contaComoAtividade()).length;
   }
 
   public calcularTaxaConclusao(): number {
