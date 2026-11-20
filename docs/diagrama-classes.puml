@@ -84,6 +84,7 @@ abstract class ItemAcademico <<classe base>> #FFF3CD {
   .. Abstratos: cada subclasse implementa ..
   + {abstract} obterCategoria(): string
   + {abstract} estaPendente(): boolean
+  + {abstract} contaComoAtividade(): boolean
   + {abstract} obterExibicaoFormatada(): string
   .. Concretos ..
   + obterResumoBasico(): string
@@ -106,6 +107,7 @@ class AtividadePratica #E3F2FD {
   .. Implementa os abstratos ..
   + obterCategoria(): string
   + estaPendente(): boolean
+  + contaComoAtividade(): boolean
   + obterExibicaoFormatada(): string
   .. Comportamento ..
   + marcarComoConcluida(): void
@@ -154,6 +156,7 @@ class Lembrete #E3F2FD {
   .. Implementa os abstratos ..
   + obterCategoria(): string
   + estaPendente(): boolean
+  + contaComoAtividade(): boolean
   + obterExibicaoFormatada(): string
   .. Comportamento ..
   + alternarFixacao(): void
