@@ -133,12 +133,19 @@ export class Workspace {
   }
 
   public obterTotalAtividades(): number {
-    // TODO (Colaborador): Contabilizar total de atividades da disciplina
-    return this.itens.length;
+    return this.itens.filter((item) => item.contaComoAtividade()).length;
   }
 
   public calcularTaxaConclusao(): number {
-    // TODO (Colaborador): Calcular percentual (0 a 100) de atividades concluídas
-    return 0;
+    const total = this.obterTotalAtividades();
+    if (total === 0) {
+      return 0;
+    }
+
+    const concluidas = this.itens.filter(
+      (item) => item.contaComoAtividade() && !item.estaPendente()
+    ).length;
+
+    return Math.round((concluidas / total) * 100);
   }
 }
